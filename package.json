@@ -1,0 +1,26 @@
+{
+    "name": "@amjs/api-parser",
+    "version": "0.1.0",
+    "description": "Reads and parses an API spec file, then creates ORM solution",
+    "keywords": [
+        "nodejs",
+        "module",
+        "parser",
+        "open-api"
+    ],
+    "license": "MIT",
+    "author": "Arturo Martínez <arturo.mart.diaz@gmail.com>",
+    "repository": {
+        "type": "git"
+    },
+    "main": "index.js",
+    "scripts": {
+        "demo": "NODE_ENV=dev node index.js --src demo/api/users.yml --o demo/src --v"
+    },
+    "dependencies": {
+        "@amjs/templater": "^0.1.3",
+        "chalk": "^2.4.2",
+        "yaml": "^1.6.0"
+    },
+    "bin": "index.js"
+}

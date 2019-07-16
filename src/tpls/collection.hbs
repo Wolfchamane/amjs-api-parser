@@ -1,0 +1,30 @@
+// Requires item type class
+require('{{itemType.path}}');
+// --------------------------- /
+const { AmjsDataTypesCollection } = require('@amjs/data-types');
+
+/**
+* @NOTICE: DO NOT MODIFY THIS FILE, generated with '@amjs/api-parser'
+* @created {{date}}
+*
+* {{summary}}
+* @namespace   {{dotSep namespace}}
+* @class       {{dotSep namespace}}.{{key}}
+* @extends     amjs.dataTypes.Object
+*/
+class {{capitalCamelize namespace}}{{key}} extends AmjsDataTypesCollection
+{
+    /**
+     * @inheritDoc
+     */
+    constructor(values)
+    {
+        super();
+        this.$itemType = '{{itemType.name}}';
+        this.value = values;
+    }
+}
+
+// Register and export collection class
+AmjsDataTypesCollection.register('{{capitalCamelize namespace}}{{key}}', {{capitalCamelize namespace}}{{key}});
+module.exports = {{capitalCamelize namespace}}{{key}};

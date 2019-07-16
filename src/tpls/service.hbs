@@ -1,0 +1,58 @@
+// Required collections
+require('{{collection.path}}');
+// ---------------------------- /
+const AmjsAjaxService = require('@amjs/ajax-service');
+
+/**
+* @NOTICE: DO NOT MODIFY THIS FILE, generated with '@amjs/api-parser'
+* @created {{date}}
+*
+* {{service.summary}}
+* @namespace   {{dotSep namespace}}
+* @class       {{dotSep namespace}}.{{key}}
+* @extends     amjs.ajax.Service
+*/
+class {{capitalCamelize namespace}}{{key}} extends AmjsAjaxService
+{
+    /**
+     * @override
+     */
+    constructor(values = {})
+    {
+        super();
+
+        this.$allowedMethods = [
+            {{#each service.methods as |method|}}
+            '{{method}}',
+            {{/each}}
+        ];
+
+        values = Object.assign(values, {
+            path   : '{{service.path}}',
+            method : '{{service.method}}'
+        });
+
+        this._setProperties(values);
+    }
+
+    /**
+     * @override
+     */
+    _getModel(method = '{{service.method}}')
+    {
+        let model;
+        switch (method)
+        {
+            case '{{service.method}}':
+            default:
+                model = '{{collection.name}}';
+                break;
+        }
+
+        return model;
+    }
+}
+
+// Register & export service class
+AmjsAjaxService.register('{{capitalCamelize namespace}}{{key}}', {{capitalCamelize namespace}}{{key}});
+module.exports = {{capitalCamelize namespace}}{{key}};

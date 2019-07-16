@@ -1,0 +1,45 @@
+paths:
+  /users:
+    get:
+      summary: List all users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Creates a new user
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    Error:
+      summary: Error object instance
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    User:
+      summary: User instance
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Users:
+      summary: Collection of users
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
