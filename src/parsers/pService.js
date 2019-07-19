@@ -1,3 +1,4 @@
+const { capital, camelize } = require('../utils');
 const { log }   = require('../logger');
 const path      = require('path');
 const templater = require('@amjs/templater');
@@ -6,16 +7,18 @@ const writer    = require('../writer');
 /**
  * Service parser. Extracts all the information of a service specified into the API file.
  * @param   {String}    _path       Service path
+ * @param   {String}    basePath    API base path
  * @param   {Object}    services    Available services in API spec file
  * @param   {Object}    config      api-parser configuration
  */
-module.exports = (_path, services, config) =>
+module.exports = (_path, basePath, services, config) =>
 {
-    let key = _path.replace(/\//g, ''); //@todo ---> fix key value and feature path: /path/{param} (recursively)
-    key = `${key.charAt(0).toUpperCase()}${key.substr(1)}`;
+    //@todo ---> fix key value and feature path: /path/{param} (recursively)
+    const key = capital(camelize(_path));
+
     const srv = services[_path];
     const service = {
-        path    : _path,
+        path    : `${basePath}${_path}`,
         methods : [],
         summary : srv.summary || ''
     };

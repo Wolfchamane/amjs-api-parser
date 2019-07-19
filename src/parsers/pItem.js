@@ -22,6 +22,10 @@ module.exports = (item, config) =>
                 case 'integer':
                     type = 'Number';
                     break;
+                /* @todo:
+                case 'array':
+                    type = (prop.items && prop.items.$ref) || type;
+                    break;*/
                 default:
                     type = `${prop.type.charAt(0).toUpperCase()}${prop.type.substr(1)}`;
                     break;

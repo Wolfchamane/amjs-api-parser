@@ -8,7 +8,7 @@ const extractor                                         = require('./extractors'
  */
 module.exports = (source = '', config) =>
 {
-    const { items, collections, services } = extractor(source);
+    const { items, collections, services, basePath } = extractor(source);
 
     // items
     items.forEach(item => itemParser(item, config));
@@ -17,5 +17,5 @@ module.exports = (source = '', config) =>
     collections.forEach(collection => collectionParser(collection, config));
 
     // paths
-    Object.keys(services).forEach(_path => serviceParser(_path, services, config));
+    Object.keys(services).forEach(_path => serviceParser(_path, basePath, services, config));
 };

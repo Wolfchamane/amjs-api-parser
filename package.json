@@ -1,6 +1,6 @@
 {
     "name": "@amjs/api-parser",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Reads and parses an API spec file, then creates ORM solution",
     "keywords": [
         "nodejs",

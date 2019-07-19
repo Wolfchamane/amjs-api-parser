@@ -31,6 +31,7 @@ module.exports = (source = '') =>
     );
 
     const services = yamlObj.paths;
+    const basePath = yamlObj.basePath || '';
 
-    return { collections, items, services };
+    return { collections, items, services, basePath };
 };

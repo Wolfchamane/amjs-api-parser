@@ -1,4 +1,4 @@
-# @amjs/api-parser 0.1.0
+# @amjs/api-parser 0.1.1
 
 > Reads your API spec file and creates complete ORM solution files, using [@amjs/data-types](https://www.npmjs.com/package/@amjs/data-types)
 
