@@ -1,7 +1,7 @@
 {{#if requirements.length}}
 // Required base data types
 {{#each requirements as |path|}}
-require('{{path}}');
+require('{{parseRequirement path}}');
 {{/each}}
 // ------------------------ /
 {{/if}}
@@ -13,10 +13,10 @@ const { AmjsDataTypesObject } = require('@amjs/data-types');
  *
  * {{summary}}
  * @namespace   {{dotSep namespace}}
- * @class       {{dotSep namespace}}.{{key}}
+ * @class       {{dotSep className}}
  * @extends     amjs.dataTypes.Object
  */
-class {{capitalCamelize namespace}}{{key}} extends AmjsDataTypesObject
+class {{className}} extends AmjsDataTypesObject
 {
     /**
      * @inheritDoc
@@ -40,5 +40,5 @@ class {{capitalCamelize namespace}}{{key}} extends AmjsDataTypesObject
 }
 
 // Register and export class
-AmjsDataTypesObject.register('{{capitalCamelize namespace}}{{key}}', {{capitalCamelize namespace}}{{key}});
-module.exports = {{capitalCamelize namespace}}{{key}};
+AmjsDataTypesObject.register('{{className}}', {{className}});
+module.exports = {{className}};

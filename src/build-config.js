@@ -3,6 +3,69 @@ const path          = require('path');
 const packageInfo   = require(path.resolve(__dirname, '..', 'package.json'));
 const cwd           = process.cwd();
 
+const _buildTestsPaths = (config = {}) =>
+{
+    const tests = {};
+    tests.root = config.paths.output.endsWith('src')
+        ? path.resolve(config.paths.output, '..')
+        : config.paths.output;
+    tests.root = path.join(tests.root, 'tests');
+    tests.unit = path.join(tests.root, 'unit');
+    tests.services = path.join(tests.unit, 'services');
+    tests.type = path.join(tests.unit, 'type');
+    tests.items = path.join(tests.type, 'item');
+    tests.collections = path.join(tests.type, 'collections');
+
+    return tests;
+};
+
+const _buildOutputPaths = (config = {}) =>
+{
+    if (!config.paths.output.endsWith('src'))
+    {
+        config.paths.output = path.join(config.paths.output, 'src')
+    }
+    const output = {
+        root    : config.paths.output
+    };
+    output.services    = path.join(output.root, 'services');
+    output.type        = path.join(output.root, 'type');
+    output.collections = path.join(output.root, 'type', 'collection');
+    output.items       = path.join(output.root, 'type', 'item');
+
+    return output;
+};
+
+const _buildTemplatesPaths = (config = {}) =>
+{
+    const templates = {
+        root    : path.join(__dirname, 'tpls', config.templates)
+    };
+    templates.sources = {
+        root : path.join(templates.root, 'src')
+    };
+    templates.tests = {
+        root : path.join(templates.root, 'test')
+    };
+    templates.sources.collection    = path.join(templates.sources.root, 'collection.hbs');
+    templates.sources.item          = path.join(templates.sources.root, 'item.hbs');
+    templates.sources.service       = path.join(templates.sources.root, 'service.hbs');
+    templates.tests.collection    = path.join(templates.tests.root, 'collection.hbs');
+    templates.tests.item          = path.join(templates.tests.root, 'item.hbs');
+    templates.tests.service       = path.join(templates.tests.root, 'service.hbs');
+
+    return templates;
+};
+
+const _buildConfigPaths = (config = {}) =>
+{
+    const templates = _buildTemplatesPaths(config);
+    const output = _buildOutputPaths(config);
+    const tests = _buildTestsPaths(config);
+
+    config.paths   = Object.assign(config.paths, { templates, output, tests });
+};
+
 /**
  * Builds api-parser configuration object
  * @param   {Array}     args    Process arguments
@@ -17,9 +80,10 @@ module.exports = (args = [], config = {}) =>
         },
     );
 
-    config.logFile   = path.join(config.paths.logs, `${config.date}.log`);
     config.namespace = cwd.replace(/.+\/(.+)$/, '$1');
     config.package   = packageInfo;
+    config.templates = 'javascript';
+    config.spec      = 'open-api';
 
     args.forEach(
         (arg, index) =>
@@ -27,11 +91,7 @@ module.exports = (args = [], config = {}) =>
             const value = args[index + 1];
             switch(arg)
             {
-                case '--nc':
-                case '-no-clean':
-                    config.clean = false;
-                    break;
-                case '--s':
+               case '--s':
                 case '--src':
                 case '-source':
                 {
@@ -56,6 +116,14 @@ module.exports = (args = [], config = {}) =>
                 case '-verbose':
                     config.debug = true;
                     break;
+                case '--tpl':
+                case '-templates':
+                    config.templates = value;
+                    break;
+                case '--sp':
+                case '-spec':
+                    config.spec = value;
+                    break;
             }
         }
     );
@@ -70,25 +138,5 @@ module.exports = (args = [], config = {}) =>
         throw new Error('Missing output destination folder');
     }
 
-    config.paths   = Object.assign(config.paths, {
-        src         : config.paths.output,
-        services    : path.join(config.paths.output, 'services'),
-        type        : path.join(config.paths.output, 'type'),
-        collections : path.join(config.paths.output, 'type', 'collection'),
-        items       : path.join(config.paths.output, 'type', 'item'),
-        templates   : path.join(__dirname, 'tpls')
-    });
-
-    const tests = {};
-    tests.root = config.paths.output.endsWith('src')
-        ? path.resolve(config.paths.output, '..')
-        : config.paths.output;
-    tests.root = path.join(tests.root, 'tests');
-    tests.unit = path.join(tests.root, 'unit');
-    tests.services = path.join(tests.unit, 'services');
-    tests.type = path.join(tests.unit, 'type');
-    tests.items = path.join(tests.type, 'item');
-    tests.collections = path.join(tests.type, 'collections');
-
-    config.paths.tests = tests;
+    _buildConfigPaths(config);
 };

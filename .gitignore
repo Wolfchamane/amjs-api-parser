@@ -2,3 +2,5 @@
 .idea
 node_modules
 npm*
+demo
+!demo/api/users.yml

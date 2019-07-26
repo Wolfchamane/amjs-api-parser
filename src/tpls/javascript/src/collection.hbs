@@ -1,5 +1,5 @@
 // Requires item type class
-require('{{itemType.path}}');
+require('../item/{{filePath itemTypePath}}');
 // --------------------------- /
 const { AmjsDataTypesCollection } = require('@amjs/data-types');
 
@@ -9,10 +9,10 @@ const { AmjsDataTypesCollection } = require('@amjs/data-types');
 *
 * {{summary}}
 * @namespace   {{dotSep namespace}}
-* @class       {{dotSep namespace}}.{{key}}
+* @class       {{dotSep className}}
 * @extends     amjs.dataTypes.Object
 */
-class {{capitalCamelize namespace}}{{key}} extends AmjsDataTypesCollection
+class {{className}} extends AmjsDataTypesCollection
 {
     /**
      * @inheritDoc
@@ -20,11 +20,11 @@ class {{capitalCamelize namespace}}{{key}} extends AmjsDataTypesCollection
     constructor(values)
     {
         super();
-        this.$itemType = '{{itemType.name}}';
+        this.$itemType = '{{itemType}}';
         this.value = values;
     }
 }
 
 // Register and export collection class
-AmjsDataTypesCollection.register('{{capitalCamelize namespace}}{{key}}', {{capitalCamelize namespace}}{{key}});
-module.exports = {{capitalCamelize namespace}}{{key}};
+AmjsDataTypesCollection.register('{{className}}', {{className}});
+module.exports = {{className}};
