@@ -6,39 +6,37 @@
 const { equal } = require('assert');
 const AmjsAjaxService = require('@amjs/ajax-service');
 const AmjsFactory = require('@amjs/factory');
-const {{capitalCamelize namespace}}{{key}} = require('../../../src/services/{{key}}');
+const {{className}} = require('{{filePath models.get}}');
 
 (function()
 {
-    let sut = new {{capitalCamelize namespace}}{{key}}();
-    equal(sut instanceof AmjsAjaxService, true, '{{capitalCamelize namespace}}{{key}} extends AmjsAjaxService');
+    let sut = new {{className}}();
+    equal(sut instanceof AmjsAjaxService, true, '{{className}} extends AmjsAjaxService');
 
-    sut = AmjsFactory.create('{{capitalCamelize namespace}}{{key}}');
-    equal(sut instanceof {{capitalCamelize namespace}}{{key}}, true,
-        'Is registered as "{{capitalCamelize namespace}}{{key}}"');
+    sut = AmjsFactory.create('{{className}}');
+    equal(sut instanceof {{className}}, true,
+        'Is registered as "{{className}}"');
 }());
 
 (function()
 {
     const allowedMethods = [
-    {{#each service.methods as |method|}}
+    {{#each allowedMethods as |method|}}
         '{{method}}',
     {{/each}}];
 
-    const path = '{{service.path}}';
-    const method = '{{service.method}}';
+    const path = '{{url}}';
 
-    const sut = new {{capitalCamelize namespace}}{{key}}();
+    const sut = new {{className}}();
     equal(sut.$allowedMethods.length === allowedMethods.length, true, `$allowedMethods is: ${allowedMethods.join()}`);
     equal(sut.path === path, true, `path is "${path}"`);
-    equal(sut.method === method, true, `method is "${method}"`);
 }());
 
 (function()
 {
-    const model = '{{collection.name}}';
-    const sut = new {{capitalCamelize namespace}}{{key}}();
-    equal(sut._getModel('{{service.method}}') === model, true, `_getModel returns expected "${model}"`);
+    const model = '{{model.get}}';
+    const sut = new {{className}}();
+    equal(sut._getModel('{{model.get}}') === model, true, `_getModel returns expected "${model}"`);
     equal(sut._getModel('OPTION') === model, true, '_getModel of invalid method returns "${model}"');
     equal(sut._getModel() === model, true, '_getModel of empty method returns "${model}"');
 }());

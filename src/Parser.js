@@ -43,27 +43,51 @@ module.exports = class AmjsApiParser
             tests   : []
         };
 
-        parsed.collections.forEach(item => this._composeCollectionSource(item, output), this);
-        parsed.collections.forEach(item => this._composeCollectionTest(item, output), this);
-        parsed.items.forEach(item => this._composeItemSource(item, output), this);
+        parsed.collections.forEach(item =>
+                this._composeSource('collection', item, output)
+                    ._composeTest('collection', item, output));
+        parsed.items.forEach(
+            item =>
+                this._composeSource('item', item, output)
+                    ._composeTest('item', item, output));
+        parsed.paths.forEach(
+            item =>
+                this._composeSource('service', item, output)
+                    ._composeTest('service', item, output));
 
-        this.logger.log('Creating source files');
-        this._dumpFiles(output.sources);
-        this.logger.log('Creating tests files');
-        this._dumpFiles(output.tests);
+        this._dumpFiles(output);
     }
 
-    _composeItemSource(config = {}, { sources = [] })
+    _composeTest(type = '', config = {}, { tests = [] })
     {
-        const template = dotProp(this, `config.paths.templates.sources.item`);
+        const template = dotProp(this, `config.paths.templates.tests.${type}`);
         const { namespace, date } = this.config;
-        config.className = capitalize(camelize(`${namespace}${config.id}`));
-        const context = Object.assign({}, config, { namespace, date });
+        const context = Object.assign({}, config, { namespace, date, for : `tests.${type}` });
         const content = AmjsTemplater(template, context);
 
         const id = decamelize(config.id, '/').split('/');
         let fileName = id.pop();
-        const filePath = path.join(dotProp(this, 'config.paths.output.items'), id.join('/'));
+        const filePath = path.join(dotProp(this, `config.paths.tests.${type}s`), id.join('/'));
+        fileName = path.join(filePath, `${capitalize(fileName)}.js`);
+
+        tests.push({
+            content,
+            filePath,
+            fileName
+        });
+    }
+
+    _composeSource(type = '', config = {}, { sources = [] })
+    {
+        const template = dotProp(this, `config.paths.templates.sources.${type}`);
+        const { namespace, date } = this.config;
+        config.className = capitalize(camelize(`${namespace}-${type}-${config.id}`));
+        const context = Object.assign({}, config, { namespace, date, for : `sources.${type}` });
+        const content = AmjsTemplater(template, context);
+
+        const id = decamelize(config.id, '/').split('/');
+        let fileName = id.pop();
+        const filePath = path.join(dotProp(this, `config.paths.output.${type}s`), id.join('/'));
         fileName = path.join(filePath, `${capitalize(fileName)}.js`);
 
         sources.push({
@@ -71,98 +95,29 @@ module.exports = class AmjsApiParser
             fileName,
             content
         });
+
+        return this;
     }
 
-    _composeCollectionSource(config = {}, { sources = [] })
+    _dumpFiles(stack = {})
     {
-        const template = dotProp(this, `config.paths.templates.sources.collection`);
-        const { namespace, date } = this.config;
-        config.itemTypePath = config.itemType;
-        config.itemType = `${capitalize(camelize(namespace))}${config.itemType}`;
-        config.className = capitalize(camelize(`${namespace}${config.id}`));
-        const context = Object.assign({}, config, { namespace, date });
-        const content = AmjsTemplater(template, context);
-
-        const id = decamelize(config.id, '/').split('/');
-        let fileName = id.pop();
-        const filePath = path.join(dotProp(this, 'config.paths.output.collections'), id.join('/'));
-        fileName = path.join(filePath, `${capitalize(fileName)}.js`);
-
-        sources.push({
-            content,
-            filePath,
-            fileName
-        });
-    }
-
-    _composeCollectionTest(config = {}, { tests = []})
-    {
-        const template = dotProp(this, `config.paths.templates.tests.collection`);
-        const { namespace, date } = this.config;
-        const context = Object.assign({}, config, { namespace, date });
-        const content = AmjsTemplater(template, context);
-
-        const id = decamelize(config.id, '/').split('/');
-        let fileName = id.pop();
-        const filePath = path.join(dotProp(this, 'config.paths.tests.collections'), id.join('/'));
-        fileName = path.join(filePath, `${capitalize(fileName)}.js`);
-
-        tests.push({
-            content,
-            filePath,
-            fileName
-        });
-    }
-
-    _compose(type = '', item, { sources = [], tests = [] })
-    {
-        let fileName = item.fileName || item.id;
-        if (item.parent)
-        {
-            const destChildFolder = path.join(dotProp(this, `config.paths.output.${type}s`), item.parent);
-            const destChildTestFolder = path.join(dotProp(this, `config.paths.tests.${type}s`), item.parent);
-            [ destChildFolder, destChildTestFolder].forEach(folder => makeFolder(folder));
-
-            fileName = `${item.parent}/${item.fileName}`;
-        }
-
-        const { namespace, date } = this.config;
-        const className = capitalize(camelize(`${namespace}-${fileName}`));
-        item = Object.assign({}, item, { className, namespace, date });
-
-        const tplFilePath = dotProp(this, `config.paths.templates.sources.${type}`);
-        const tplTestPath = dotProp(this, `config.paths.templates.tests.${type}`);
-
-        const contentFile = AmjsTemplater(tplFilePath, item);
-        const contentTestFile = AmjsTemplater(tplTestPath, item);
-
-        const destFilePath = path.join(dotProp(this, `config.paths.output.${type}s`), `${fileName}.js`);
-        const destTestPath = path.join(dotProp(this, `config.paths.tests.${type}s`), `${fileName}.js`);
-
-
-        sources.push({
-            content     : contentFile,
-            destination : destFilePath
-        });
-
-        tests.push({
-            content     : contentTestFile,
-            destination : destTestPath
-        });
-    }
-
-    _dumpFiles(files = [])
-    {
-        files.forEach(
-            file =>
+        Object.keys(stack).forEach(
+            key =>
             {
-                makeFolder(file.filePath);
-                this.logger.log('Writing file @ {{fileName}}', file);
-                writer(
-                    file.fileName,
-                    file.content,
-                    true,
-                    false);
+                this.logger.log(`Creating ${key} files`);
+                const files = stack[key] || [];
+                files.forEach(
+                    file =>
+                    {
+                        makeFolder(file.filePath);
+                        this.logger.log('Writing file @ {{fileName}}', file);
+                        writer(
+                            file.fileName,
+                            file.content,
+                            true,
+                            false);
+                    }
+                );
             }
         );
     }

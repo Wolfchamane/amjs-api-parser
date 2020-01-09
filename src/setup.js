@@ -1,9 +1,7 @@
-const { decamelize, camelize, capitalize, dotProp } = require('@amjs/utils');
-const { makeFolder }                                = require('@amjs/utils-fs');
-const fs                                            = require('fs');
-const Handlebars                                    = require('handlebars');
-
-const ormBasics = ['string', 'number', 'boolean', 'object', 'array', 'collection', 'date', 'password'];
+const { dotProp }       = require('@amjs/utils');
+const { makeFolder }    = require('@amjs/utils-fs');
+const fs                = require('fs');
+const path              = require('path');
 
 /**
  * Extract the keys of source object in the order specified and creates its content as a folder.
@@ -24,28 +22,6 @@ const makeDir = (source = {}, order = []) =>
             }
         }
     );
-};
-
-const countChar = (value = '', char = '') =>
-{
-    let acum = 0;
-    if (value)
-    {
-        for (let i = value.length - 1, l = 0; i >= l; i--)
-        {
-            if (value[i] === char)
-            {
-                acum++;
-            }
-        }
-    }
-    return acum;
-};
-
-const filePath = (value = '') =>
-{
-    value = decamelize(value).split('-');
-    return value.map((it, id) => id === value.length - 1 ? capitalize(it) : it).join('/');
 };
 
 /**
@@ -70,35 +46,5 @@ module.exports = (parser = {}) =>
     ]);
 
     parser.logger.log('Setting up Handlebars helpers');
-    Handlebars.registerHelper('camelize', value => camelize(value));
-    Handlebars.registerHelper('capitalCamelize', value => capitalize(camelize(value)));
-    Handlebars.registerHelper('dotSep', value => decamelize(value, '.').toLowerCase());
-    Handlebars.registerHelper('parseRequirement',
-        value =>
-        {
-            value = value.toLowerCase() === 'integer' ? 'number' : value;
-            if (ormBasics.includes(value.toLowerCase()))
-            {
-                value = `@amjs/data-types/src/${capitalize(value)}.js`;
-            }
-            else
-            {
-                value = `./${filePath(value)}`;
-            }
-
-            return value;
-        }
-    );
-    Handlebars.registerHelper('filePath', value => filePath(value));
-    Handlebars.registerHelper('collectionPath', value =>
-    {
-        let base = '../../../../src/type/collection';
-        value = filePath(value);
-        for (let i = 0, l = countChar(value, '/') - 1; i <= l; i++)
-        {
-            base = `../${base}`;
-        }
-
-        return `${base}/${value}`;
-    });
+    require(path.join(parser.config.paths.templates.root, 'helpers.js'));
 };

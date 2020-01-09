@@ -1,5 +1,5 @@
 // Required collections
-require('{{collection.path}}');
+require('{{filePath models.get}}');
 // ---------------------------- /
 const AmjsAjaxService = require('@amjs/ajax-service');
 
@@ -12,7 +12,7 @@ const AmjsAjaxService = require('@amjs/ajax-service');
 * @class       {{dotSep namespace}}.{{key}}
 * @extends     amjs.ajax.Service
 */
-class {{capitalCamelize namespace}}{{key}} extends AmjsAjaxService
+class {{className}} extends AmjsAjaxService
 {
     /**
      * @override
@@ -22,14 +22,13 @@ class {{capitalCamelize namespace}}{{key}} extends AmjsAjaxService
         super();
 
         this.$allowedMethods = [
-            {{#each service.methods as |method|}}
+            {{#each allowedMethods as |method|}}
             '{{method}}',
             {{/each}}
         ];
 
         values = Object.assign(values, {
-            path   : '{{service.path}}',
-            method : '{{service.method}}'
+            path   : '{{url}}'
         });
 
         this._setProperties(values);
@@ -38,14 +37,34 @@ class {{capitalCamelize namespace}}{{key}} extends AmjsAjaxService
     /**
      * @override
      */
-    _getModel(method = '{{service.method}}')
+    _getModel(method = 'GET')
     {
         let model;
         switch (method)
         {
-            case '{{service.method}}':
+            {{#if models.post}}
+            case 'POST':
+                model = '{{models.post}}';
+                break;
+            {{/if}}
+            {{#if models.put}}
+            case 'PUT':
+                model = '{{models.put}}';
+                break;
+            {{/if}}
+            {{#if models.patch}}
+            case 'PATCH':
+                model = '{{models.patch}}';
+                break;
+            {{/if}}
+            {{#if models.delete}}
+            case 'DELETE':
+                model = '{{models.delete}}';
+                break;
+            {{/if}}
+            case 'GET':
             default:
-                model = '{{collection.name}}';
+                model = '{{models.get}}';
                 break;
         }
 
@@ -54,5 +73,5 @@ class {{capitalCamelize namespace}}{{key}} extends AmjsAjaxService
 }
 
 // Register & export service class
-AmjsAjaxService.register('{{capitalCamelize namespace}}{{key}}', {{capitalCamelize namespace}}{{key}});
-module.exports = {{capitalCamelize namespace}}{{key}};
+AmjsAjaxService.register('{{className}}', {{className}});
+module.exports = {{className}};

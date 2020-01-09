@@ -6,20 +6,20 @@
 const { equal }                     = require('assert');
 const { AmjsDataTypesObject }       = require('@amjs/data-types');
 const AmjsFactory                   = require('@amjs/factory');
-const {{capitalCamelize namespace}}{{key}}    = require('../../../../src/{{keySourcePath}}/{{key}}');
+const {{className}} = require('{{filePath id}}');
 
 (function()
 {
-    let sut = new {{capitalCamelize namespace}}{{key}}();
-    equal(sut instanceof AmjsDataTypesObject, true, '{{capitalCamelize namespace}}{{key}} extends AmjsDataTypesObject');
+    let sut = new {{className}}();
+    equal(sut instanceof AmjsDataTypesObject, true, '{{className}} extends AmjsDataTypesObject');
 
-    sut = AmjsFactory.create('{{capitalCamelize namespace}}{{key}}');
-    equal(sut instanceof {{capitalCamelize namespace}}{{key}}, true, 'Is registered as "{{capitalCamelize namespace}}{{key}}"');
+    sut = AmjsFactory.create('{{className}}');
+    equal(sut instanceof {{className}}, true, 'Is registered as "{{className}}"');
 }());
 
 (function()
 {
-    const sut = new {{capitalCamelize namespace}}{{key}}();
+    const sut = new {{className}}();
     [
         {{#each properties as |prop|}}
         '{{prop.name}}',
@@ -29,7 +29,7 @@ const {{capitalCamelize namespace}}{{key}}    = require('../../../../src/{{keySo
 
 (function()
 {
-    const sut = new {{capitalCamelize namespace}}{{key}}();
+    const sut = new {{className}}();
     const propertyTypes = {
     {{#each properties as |prop|}}
         {{prop.name}}: '{{prop.type}}',

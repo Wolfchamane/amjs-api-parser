@@ -1,7 +1,7 @@
 {{#if requirements.length}}
 // Required base data types
 {{#each requirements as |path|}}
-require('{{parseRequirement path}}');
+require('{{filePath path}}');
 {{/each}}
 // ------------------------ /
 {{/if}}
@@ -32,6 +32,11 @@ class {{className}} extends AmjsDataTypesObject
         };
 
         {{#each properties as |prop|}}
+        /**
+         * @property    {{prop.name}}
+         * @type        {{itemPropType prop.type}}
+         * @default     null
+         */
         this.{{prop.name}} = null;
         {{/each}}
 
